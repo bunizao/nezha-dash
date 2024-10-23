@@ -38,27 +38,28 @@ jobs:
 
       # Step 4: Merge changes from upstream excluding workflow files
       - name: Merge upstream changes excluding workflow files
+        shell: bash
         run: |
           # Merge upstream/main into current branch without committing
-          git merge upstream/main --no-commit --no-ff
+          git merge upstream/main --no-commit --no-ff || true
 
           # Remove workflow files from the staged changes
-          git reset HEAD .github/workflows/
+          git reset HEAD .github/workflows/ || true
 
           # Restore the workflow files to their original state
-          git checkout -- .github/workflows/
+          git checkout -- .github/workflows/ || true
 
-          # Commit the merge
-          git commit -m "Merge upstream changes"
+          # Check if there are changes to commit
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit"
+          else
+            git commit -m "Merge upstream changes"
 
-      # Step 5: Push changes to the target branch
-      - name: Push changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git push origin main
+            # Push changes to the target branch
+            git push origin main
+          fi
 
-      # Step 6: Handle errors
+      # Step 5: Handle errors
       - name: Sync check
         if: failure()
         run: |
