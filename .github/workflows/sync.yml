@@ -2,7 +2,6 @@ name: Upstream Sync
 
 permissions:
   contents: write
-  workflows: write
 
 on:
   schedule:
@@ -19,24 +18,49 @@ jobs:
     if: ${{ github.event.repository.fork }}
 
     steps:
-      # Step 1: run a standard checkout action
-      - name: Checkout target repo
+      # Step 1: Checkout target repository
+      - name: Checkout target repository
         uses: actions/checkout@v3
-
-      # Step 2: run the sync action
-      - name: Sync upstream changes
-        id: sync
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
         with:
-          upstream_sync_repo: hamster1963/nezha-dash
-          upstream_sync_branch: main
-          target_sync_branch: main
-          target_repo_token: ${{ secrets.GITHUB_TOKEN }} 
-          # Set test_mode true to run tests instead of the true action!!
-          test_mode: false
+          fetch-depth: 0  # Fetch all history for accurate merging
 
+      # Step 2: Set up Git configuration
+      - name: Set up Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      # Step 3: Add upstream repository and fetch changes
+      - name: Add upstream repository
+        run: |
+          git remote add upstream https://github.com/hamster1963/nezha-dash.git
+          git fetch upstream
+
+      # Step 4: Merge changes from upstream excluding workflow files
+      - name: Merge upstream changes excluding workflow files
+        run: |
+          # Merge upstream/main into current branch without committing
+          git merge upstream/main --no-commit --no-ff
+
+          # Remove workflow files from the staged changes
+          git reset HEAD .github/workflows/
+
+          # Restore the workflow files to their original state
+          git checkout -- .github/workflows/
+
+          # Commit the merge
+          git commit -m "Merge upstream changes"
+
+      # Step 5: Push changes to the target branch
+      - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push origin main
+
+      # Step 6: Handle errors
       - name: Sync check
         if: failure()
         run: |
-          echo "[Error] Due to a change in the workflow file of the upstream repository, GitHub has automatically suspended the scheduled automatic update.
+          echo "[Error] An error occurred during the sync process."
           exit 1
