@@ -14,8 +14,8 @@ import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
 export default function ServerListClient() {
-  const { status, setStatus } = useStatus();
-  const { filter, setFilter } = useFilter();
+  const { status } = useStatus();
+  const { filter } = useFilter();
   const t = useTranslations("ServerListClient");
   const containerRef = useRef<HTMLDivElement>(null);
   const defaultTag = "defaultTag";
@@ -23,13 +23,11 @@ export default function ServerListClient() {
 
   const [tag, setTag] = useState<string>(defaultTag);
 
-  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     const savedTag = sessionStorage.getItem("selectedTag") || defaultTag;
     setTag(savedTag);
 
     restoreScrollPosition();
-    setIsMounted(true);
   }, []);
 
   const handleTagChange = (newTag: string) => {
@@ -71,7 +69,7 @@ export default function ServerListClient() {
       </div>
     );
 
-  if (!data?.result || !isMounted) return null;
+  if (!data?.result) return null;
 
   const { result } = data;
   const sortedServers = result.sort((a, b) => {
@@ -121,8 +119,6 @@ export default function ServerListClient() {
       <section className="flex items-center gap-2 w-full overflow-hidden">
         <button
           onClick={() => {
-            setStatus("all");
-            setFilter(false);
             router.push(`/?global=true`);
           }}
           className="rounded-[50px] bg-stone-100 p-[10px] transition-all hover:bg-stone-200 dark:hover:bg-stone-700 dark:bg-stone-800"
