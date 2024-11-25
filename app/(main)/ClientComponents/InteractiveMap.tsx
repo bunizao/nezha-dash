@@ -92,9 +92,9 @@ export function InteractiveMap({
       <AnimatePresence mode="wait">
         {tooltipData && (
           <m.div
-            initial={{ opacity: 0, filter: "blur(10px)", scale: 0.8 }}
-            animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-            className="absolute pointer-events-none bg-white dark:bg-neutral-800 px-2 py-1 rounded shadow-lg text-sm dark:border dark:border-neutral-700"
+            initial={{ opacity: 0, filter: "blur(10px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            className="absolute hidden lg:block pointer-events-none bg-white dark:bg-neutral-800 px-2 py-1 rounded shadow-lg text-sm dark:border dark:border-neutral-700"
             key={tooltipData.country}
             style={{
               left: tooltipData.centroid[0],
