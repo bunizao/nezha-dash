@@ -3,6 +3,7 @@
 import { ServerApi } from "@/app/types/nezha-api";
 import { Loader } from "@/components/loading/Loader";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import getEnv from "@/lib/env-entry";
 import { useFilter } from "@/lib/network-filter-context";
 import { useStatus } from "@/lib/status-context";
@@ -48,11 +49,14 @@ export default function ServerOverviewClient() {
               setStatus("all");
             }
           }}
-          className={cn("cursor-pointer hover:border-blue-500 transition-all", {
-            "pointer-events-none": global,
-          })}
+          className={cn(
+            "cursor-pointer hover:border-blue-500 transition-all min-h-[94px]",
+            {
+              "pointer-events-none": global,
+            },
+          )}
         >
-          <CardContent className="px-6 py-3">
+          <CardContent className="flex h-full items-center px-6 py-3">
             <section className="flex flex-col gap-1">
               <p className="text-sm font-medium md:text-base">
                 {t("p_816-881_Totalservers")}
@@ -82,7 +86,7 @@ export default function ServerOverviewClient() {
             }
           }}
           className={cn(
-            "cursor-pointer hover:ring-green-500 ring-1 ring-transparent transition-all",
+            "cursor-pointer hover:ring-green-500 ring-1 ring-transparent transition-all min-h-[94px]",
             {
               "ring-green-500 ring-2 border-transparent": status === "online",
             },
@@ -91,7 +95,7 @@ export default function ServerOverviewClient() {
             },
           )}
         >
-          <CardContent className="px-6 py-3">
+          <CardContent className="flex h-full items-center px-6 py-3">
             <section className="flex flex-col gap-1">
               <p className="text-sm font-medium md:text-base">
                 {t("p_1610-1676_Onlineservers")}
@@ -122,7 +126,7 @@ export default function ServerOverviewClient() {
             }
           }}
           className={cn(
-            "cursor-pointer hover:ring-red-500 ring-1 ring-transparent transition-all",
+            "cursor-pointer hover:ring-red-500 ring-1 ring-transparent transition-all min-h-[94px]",
             {
               "ring-red-500 ring-2 border-transparent": status === "offline",
             },
@@ -131,7 +135,7 @@ export default function ServerOverviewClient() {
             },
           )}
         >
-          <CardContent className="px-6 py-3">
+          <CardContent className="flex h-full items-center px-6 py-3">
             <section className="flex flex-col gap-1">
               <p className="text-sm font-medium md:text-base">
                 {t("p_2532-2599_Offlineservers")}
@@ -162,7 +166,7 @@ export default function ServerOverviewClient() {
             }
           }}
           className={cn(
-            "cursor-pointer hover:ring-purple-500 ring-1 ring-transparent transition-all",
+            "cursor-pointer hover:ring-purple-500 ring-1 ring-transparent transition-all min-h-[94px]",
             {
               "ring-purple-500 ring-2 border-transparent": filter === true,
             },
@@ -171,20 +175,34 @@ export default function ServerOverviewClient() {
             },
           )}
         >
-          <CardContent className="relative px-6 py-3">
+          <CardContent className="flex h-full items-center relative px-6 py-3">
             <section className="flex flex-col gap-1">
-              <p className="text-sm font-medium md:text-base">
-                {t("p_3463-3530_Totalbandwidth")}
-              </p>
+              <div className="flex items-center gap-1">
+                <p className="text-sm font-medium md:text-base">
+                  {t("p_3463-3530_Totalbandwidth")}
+                </p>
+                <Separator orientation="vertical" className="h-4 w-[1px]" />
+                <p className="text-sm font-medium md:text-base">{t("speed")}</p>
+              </div>
               {data?.result ? (
-                <section className="flex flex-col sm:flex-row pt-[8px] sm:items-center items-start gap-1">
-                  <p className="text-[12px]  text-nowrap font-semibold">
-                    ↑{formatBytes(data?.total_out_bandwidth)}
-                  </p>
-                  <p className="text-[12px] text-nowrap font-semibold">
-                    ↓{formatBytes(data?.total_in_bandwidth)}
-                  </p>
-                </section>
+                <>
+                  <section className="flex flex-row sm:items-center items-start gap-1">
+                    <p className="sm:text-[12px] text-[10px]  text-nowrap font-semibold">
+                      ↑{formatBytes(data?.total_out_bandwidth)}
+                    </p>
+                    <p className="sm:text-[12px] text-[10px]  text-nowrap font-semibold">
+                      ↓{formatBytes(data?.total_in_bandwidth)}
+                    </p>
+                  </section>
+                  <section className="flex flex-row  sm:items-center items-start gap-1">
+                    <p className="sm:text-[12px]  text-[10px] text-nowrap font-semibold">
+                      ↑{formatBytes(data?.total_out_speed)}/s
+                    </p>
+                    <p className="sm:text-[12px] text-[10px] text-nowrap font-semibold">
+                      ↓{formatBytes(data?.total_in_speed)}/s
+                    </p>
+                  </section>
+                </>
               ) : (
                 <div className="flex h-7 items-center">
                   <Loader visible={true} />
